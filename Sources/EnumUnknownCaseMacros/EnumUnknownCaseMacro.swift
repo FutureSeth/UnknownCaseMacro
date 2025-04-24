@@ -20,7 +20,9 @@ public struct EnumMemberMacro: MemberMacro, ExtensionMacro {
             throw CustomError.message("Must be applied on an enum")
         }
         
-        guard let _ = enumDecl.inheritanceClause?.inheritedTypes.first?.type else { return [] }
+        guard let _ = enumDecl.inheritanceClause?.inheritedTypes.first?.type else {
+            throw CustomError.message("Enum must conform to String")
+        }
         
         let cases = enumDecl.memberBlock.members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self)?.elements }
         
@@ -69,7 +71,7 @@ public struct EnumMemberMacro: MemberMacro, ExtensionMacro {
     
     public static func expansion(of node: SwiftSyntax.AttributeSyntax, attachedTo declaration: some SwiftSyntax.DeclGroupSyntax, providingExtensionsOf type: some SwiftSyntax.TypeSyntaxProtocol, conformingTo protocols: [SwiftSyntax.TypeSyntax], in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.ExtensionDeclSyntax] {
         guard let enumDecl = declaration.as(EnumDeclSyntax.self) else {
-            return []
+            throw CustomError.message("Must be applied on an enum")
         }
         
         let enumName = enumDecl.name.text
